@@ -183,17 +183,64 @@ unit tests, no network calls, run in under a second:
    is wired into `app/layout.tsx`, so it's present on every route
    automatically.
 
-## What I'd change with another day
+## What I'd change with another day / roadmap
 
-<!-- Fill this in yourself before recording the Loom — pick something you
-     actually noticed while building, not this placeholder. One real
-     candidate: a headless-browser fallback (Playwright) that only kicks in
-     when the static-HTML word count looks suspiciously low, so JS-rendered
-     pages don't get unfairly scored. -->
+**The one real limitation, fixed properly:** Cheerio never executes
+JavaScript, so a React/Vue-rendered page gets scored on an empty shell.
+With more time I'd add a headless-browser fallback (Playwright) that only
+kicks in when the static-HTML word count looks suspiciously low relative to
+page size — cheap for the 95% of pages that are server-rendered, accurate
+for the rest, instead of paying the Playwright cost on every request.
+
+**Essential functionality that's genuinely missing, not just nice-to-have:**
+- **Site-wide crawl**, not just one URL at a time — follow internal links
+  (or read `sitemap.xml`) and audit a whole domain in one pass, with a
+  worst-offenders list at the end. Right now Page Pulse only ever sees one
+  page; almost nobody's problem is one page.
+- **Score history** — re-run the same URL over time and chart whether the
+  score is actually moving, instead of every audit being a stateless
+  snapshot. The Redis layer already stores reports; this is "add a
+  `history:<url>` list" away, not a rebuild.
+- **Real Core Web Vitals** — the performance category currently proxies
+  speed from server response time and payload size, which is honest about
+  what it measures but isn't what Lighthouse means by "performance." A
+  proper version pulls from the Chrome UX Report API or runs Lighthouse
+  itself.
+- **Deeper accessibility** — color contrast ratios and ARIA-attribute
+  sanity checks, not just alt text and heading structure.
+- **A PR bot** — post the audit as a GitHub PR comment or Slack message
+  when a page changes, so this stops being a tool you have to remember to
+  run and becomes something that runs on you.
+
+**The part that's actually about personality, not features:** right now
+the "sharp/technical" voice is baked into fixed strings in `lib/score.ts`.
+The obvious next step is making the *voice itself* a feature —
+a tone selector (dry-technical / unhinged-roast / drill-sergeant) that
+picks which copy bank a finding pulls from, plus a generated, shareable
+"roast card" (an OG image, auto-rendered per report) so a bad score is
+something people actually want to post rather than a private PDF nobody
+sees. That's the direction I'd take "make it unmistakably yours" if this
+were a real product instead of a one-day brief — the personality shouldn't
+just be in the copy I wrote once, it should be a system the tool can keep
+generating more of.
 
 ## AI usage
 
-<!-- Required by the brief: one short paragraph on where you used AI tools
-     and what you changed afterwards. Write this honestly after you've
-     actually reviewed/edited the code — don't leave it as a boilerplate
-     disclaimer. -->
+I used Claude Code (Anthropic's agentic CLI, not just chat) across a few
+distinct passes rather than one long back-and-forth, and treated each pass
+like a different job: first extracting the actual brief from the PDF and
+turning it into a requirements checklist; then an architecture pass to
+decide the stack and API shape before any code existed; then
+implementation; then a separate verification pass — type-checking, linting,
+the unit test suite, and driving the app in an actual browser (not just
+reading code) to confirm the audit flow, error states, and mobile layout
+really worked, not just that they compiled. The design/voice rewrite you
+see now was its own later pass too: I looked at the first version, decided
+it read as generic AI-dashboard output, and had it rebuilt around a
+specific voice and visual identity instead of leaving the default output as
+final. What I changed afterward: I reviewed the generated copy in
+`lib/score.ts` line by line and will be swapping in more of my own phrasing
+before this ships, verified every claim in this README against the actual
+running app rather than trusting generated docs, and made the scope calls
+myself (what counted as "beyond the brief," what to cut if time ran short)
+rather than accepting whatever got proposed first.
