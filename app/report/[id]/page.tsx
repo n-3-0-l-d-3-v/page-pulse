@@ -1,6 +1,28 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ReportCard } from "@/components/ReportCard";
 import { getReport } from "@/lib/redis";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const report = await getReport(id);
+  if (!report) return { title: "404 · Page Pulse" };
+
+  const { grade, overall } = report.pulseScore;
+  const host = (() => {
+    try {
+      return new URL(report.url).hostname;
+    } catch {
+      return report.url;
+    }
+  })();
+
+  return { title: `${grade} (${overall}) · ${host} · Page Pulse` };
+}
 
 export default async function ReportPage({
   params,

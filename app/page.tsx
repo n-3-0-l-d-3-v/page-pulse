@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ReportCard } from "@/components/ReportCard";
 import type { AuditReport } from "@/lib/audit";
 
@@ -59,6 +59,20 @@ export default function Home() {
   }
 
   const isRunning = stage !== "idle" && stage !== "done" && stage !== "error";
+
+  // The browser tab itself gets a verdict — most reports don't bother.
+  useEffect(() => {
+    if (stage === "idle") {
+      document.title = "Page Pulse";
+    } else if (stage === "error") {
+      document.title = "failed · Page Pulse";
+    } else if (stage === "done" && result) {
+      const { grade, overall } = result.report.pulseScore;
+      document.title = `${grade} (${overall}) · Page Pulse`;
+    } else {
+      document.title = `${STAGE_LABEL[stage]} · Page Pulse`;
+    }
+  }, [stage, result]);
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-14 sm:py-24">

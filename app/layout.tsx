@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
+import { ConsoleEgg } from "@/components/ConsoleEgg";
 import "./globals.css";
 
 const displayFont = Space_Grotesk({
@@ -30,6 +31,7 @@ export default function RootLayout({
       className={`${displayFont.variable} ${monoFont.variable} h-full antialiased dark`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
+        <ConsoleEgg />
         <main className="flex-1">{children}</main>
         <footer className="border-t border-line py-6 text-center text-xs text-dim">
           <span className="opacity-60">{"// "}</span>

@@ -1,5 +1,14 @@
+"use client";
+
+import { useState } from "react";
 import type { AuditReport } from "@/lib/audit";
 import type { Grade } from "@/lib/score";
+
+const COPY_TOASTS = [
+  "copied. go flex on someone.",
+  "copied. send it to whoever built that page.",
+  "copied. receipts secured.",
+];
 
 const GRADE_LABEL: Record<Grade, string> = {
   A: "Nothing to complain about.",
@@ -63,6 +72,36 @@ function CategoryLog({
   );
 }
 
+function ShareLink({ id }: { id: string }) {
+  const [toast, setToast] = useState<string | null>(null);
+  const url = typeof window !== "undefined" ? `${window.location.origin}/report/${id}` : `/report/${id}`;
+
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(url);
+      setToast(COPY_TOASTS[Math.floor(Math.random() * COPY_TOASTS.length)]);
+      setTimeout(() => setToast(null), 2200);
+    } catch {
+      setToast("couldn't copy — grab it manually.");
+      setTimeout(() => setToast(null), 2200);
+    }
+  }
+
+  return (
+    <div className="mt-6 text-[13px]">
+      <span className="text-dim">share: </span>
+      <button
+        type="button"
+        onClick={copy}
+        className="text-accent hover:underline underline-offset-4 break-all text-left"
+      >
+        {url}
+      </button>
+      {toast && <p className="mt-1 text-ok">{toast}</p>}
+    </div>
+  );
+}
+
 export function ReportCard({ report, id }: { report: AuditReport; id?: string }) {
   const { pulseScore } = report;
 
@@ -82,14 +121,7 @@ export function ReportCard({ report, id }: { report: AuditReport; id?: string })
             <span className="font-display font-bold text-2xl">{pulseScore.grade}</span>
             <span className="text-[13px] text-dim">{GRADE_LABEL[pulseScore.grade]}</span>
           </div>
-          {id && (
-            <p className="mt-6 text-[13px] text-dim break-all">
-              share:{" "}
-              <a href={`/report/${id}`} className="text-accent hover:underline underline-offset-4">
-                {typeof window !== "undefined" ? `${window.location.origin}/report/${id}` : `/report/${id}`}
-              </a>
-            </p>
-          )}
+          {id && <ShareLink id={id} />}
         </div>
 
         <div className="border border-line divide-y divide-line">
