@@ -226,21 +226,33 @@ generating more of.
 
 ## AI usage
 
-I used Claude Code (Anthropic's agentic CLI, not just chat) across a few
-distinct passes rather than one long back-and-forth, and treated each pass
-like a different job: first extracting the actual brief from the PDF and
-turning it into a requirements checklist; then an architecture pass to
-decide the stack and API shape before any code existed; then
-implementation; then a separate verification pass — type-checking, linting,
-the unit test suite, and driving the app in an actual browser (not just
-reading code) to confirm the audit flow, error states, and mobile layout
-really worked, not just that they compiled. The design/voice rewrite you
-see now was its own later pass too: I looked at the first version, decided
-it read as generic AI-dashboard output, and had it rebuilt around a
-specific voice and visual identity instead of leaving the default output as
-final. What I changed afterward: I reviewed the generated copy in
-`lib/score.ts` line by line and will be swapping in more of my own phrasing
-before this ships, verified every claim in this README against the actual
-running app rather than trusting generated docs, and made the scope calls
-myself (what counted as "beyond the brief," what to cut if time ran short)
-rather than accepting whatever got proposed first.
+Straight answer, in pieces rather than one clean paragraph, because it
+wasn't one clean process:
+
+- I didn't ask for "a page audit tool" and ship whatever came back. I broke
+  it into stages and treated each one like a different job — figure out the
+  actual requirements first, then architecture, then build, then check the
+  thing actually works, then a separate pass just on how it looked and read.
+  Four or five distinct rounds, not one long chat.
+- The requirements pass came from the real PDF brief, not a vibe — turned
+  it into an actual checklist and kept coming back to it so nothing got
+  quietly dropped while adding the extra stuff.
+- The scoring algorithm, the error-handling table, the API design — those
+  came out of back-and-forth where I pushed on tradeoffs (why Cheerio over
+  a headless browser, why one Redis key scheme instead of a real database)
+  rather than accepting the first answer. Some of that reasoning is in the
+  README's design-decisions section almost word for word, because it held
+  up.
+- Nothing shipped on "looks right." I ran the type checker, the linter, the
+  test suite, and then actually clicked through the app in a browser —
+  good URL, broken URL, mobile width, the whole flow — before calling
+  anything done.
+- The first version of the site looked like every other AI-generated
+  dashboard. I noticed that, said so, and had it rebuilt around a real
+  visual identity and a voice instead of settling for the default.
+- What I actually did myself afterward: read the generated copy in
+  `lib/score.ts` line by line and I'm still swapping in more of my own
+  phrasing before this goes out, checked every claim in this README against
+  the app that's actually running rather than trusting the write-up, and
+  made the calls on scope myself — what counted as "beyond the brief," what
+  I'd cut if I ran out of time. Those decisions are mine, not generated.
