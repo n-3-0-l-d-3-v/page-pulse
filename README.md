@@ -6,8 +6,8 @@ Score** — plus a shareable permalink, a CLI, and live progress streaming.
 
 Built for the Digital Heroes SDE internship task kit (Task A + Task B).
 
-**Live:** `<fill in after deploying — see Deploy below>`
-**Repo:** `<fill in your GitHub URL>`
+**Live:** [page-pulse-digitalheroes.vercel.app](https://page-pulse-digitalheroes.vercel.app/)
+**Repo:** [github.com/n-3-0-l-d-3-v/page-pulse](https://github.com/n-3-0-l-d-3-v/page-pulse)
 
 ## What's here vs. what the brief asked for
 
